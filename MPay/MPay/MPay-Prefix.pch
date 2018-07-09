@@ -1,0 +1,16 @@
+//#import "/Users/mariodamianus/Desktop/Repository/IOS/Other/Mandiri-Pay/symbols.h"
+//
+//  MPay-Prefix.pch
+//  MPay
+//
+//  Created by Mario Damianus on 4/3/17.
+//  Copyright © 2017 Admin. All rights reserved.
+//
+
+#ifndef MPay_Prefix_pch
+#define MPay_Prefix_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#endif /* MPay_Prefix_pch */

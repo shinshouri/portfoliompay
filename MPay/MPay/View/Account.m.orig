@@ -1,0 +1,184 @@
+//
+//  Account.m
+//  MPay
+//
+//  Created by Admin on 7/4/16.
+//  Copyright © 2016 Admin. All rights reserved.
+//
+
+#import "Account.h"
+#import "UBirthday.h"
+
+@implementation Account
+{
+    UILabel *emailLabel, *passLabel, *confLabel;
+    UITextField *email, *pass, *conf;
+    UIButton *togglepass, *toggleconf;
+}
+@synthesize data;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.navigationItem.title = L(@"accountInformation");
+    [self UI];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+}
+
+- (void)UI {
+    UIView *bgview = [self UIView:self withFrame:CGRectMake(0, 70, [self view].frame.size.width, [self view].frame.size.height-60)];
+    [[bgview layer] setCornerRadius:10];
+    
+    [bgview addSubview:[self UILabel:self withFrame:CGRectMake(20, 0, bgview.bounds.size.width-40, 40) withText:L(@"accountInformationDesc") withTextSize:16 withAlignment:0 withLines:0]];
+    
+    emailLabel = [self UILabel:self withFrame:CGRectMake(20, 45, bgview.bounds.size.width-40, 10) withText:L(@"email") withTextSize:12 withAlignment:0 withLines:0];
+    [emailLabel setHidden:YES];
+    [bgview addSubview:emailLabel];
+    
+    email = [self CustomTextField:CGRectMake(20, emailLabel.frame.origin.y + 5, bgview.frame.size.width - 40, 40) withStrPlcHolder:L(@"email") withAttrColor:nil keyboardType:UIKeyboardTypeEmailAddress withTextColor:nil withFontSize:16 withTag:0 withDelegate:self];
+    [bgview addSubview:email];
+    
+    passLabel = [self UILabel:self withFrame:CGRectMake(20, 105, bgview.bounds.size.width-40, 10) withText:L(@"password") withTextSize:12 withAlignment:0 withLines:0];
+    [passLabel setHidden:YES];
+    [bgview addSubview:passLabel];
+    pass = [self PasswordTextField:CGRectMake(20, passLabel.frame.origin.y + 5, bgview.frame.size.width - 70, 40) withStrPlcHolder:L(@"password") withAttrColor:nil keyboardType:UIKeyboardTypeDefault withTextColor:nil withFontSize:16 withTag:1 withDelegate:self];
+    togglepass = [self btnPasswordImage:CGRectMake(pass.frame.origin.x + pass.frame.size.width, pass.frame.origin.y, 30, 30) withTag:0];
+    [bgview addSubview:pass];
+    [bgview addSubview:togglepass];
+    
+    confLabel = [self UILabel:self withFrame:CGRectMake(20, 170, bgview.bounds.size.width-40, 10) withText:L(@"confirmpassword") withTextSize:12 withAlignment:0 withLines:0];
+    [confLabel setHidden:YES];
+    [bgview addSubview:confLabel];
+    conf = [self PasswordTextField:CGRectMake(20, confLabel.frame.origin.y + 5, bgview.frame.size.width - 70, 40) withStrPlcHolder:L(@"confirmpassword") withAttrColor:nil keyboardType:UIKeyboardTypeDefault withTextColor:nil withFontSize:16 withTag:2 withDelegate:self];
+    [bgview addSubview:conf];
+    toggleconf = [self btnPasswordImage:CGRectMake(conf.frame.origin.x + conf.frame.size.width, conf.frame.origin.y, 30, 30) withTag:1];
+    [bgview addSubview:toggleconf];
+    
+    UIButton *btn = [self UIButton:self withFrame:CGRectMake(20, 230, bgview.bounds.size.width-40, 50) withTitle:L(@"next") withTag:2];
+    [btn setBackgroundColor:[self colorFromHexString:@"#00A4BB" withAlpha:1.0]];
+    btn.layer.cornerRadius = 3;
+    [bgview addSubview:btn];
+    
+    [[self view] addSubview:bgview];
+}
+
+-(void)Act:(id)sender {
+    if([sender tag] == 0)
+    {
+        if ([pass isSecureTextEntry]) {
+            pass.secureTextEntry = NO;
+            [togglepass setImage:[UIImage imageNamed:@"passclosed.png"] forState:UIControlStateNormal];
+        }
+        else
+        {
+            pass.secureTextEntry = YES;
+            [togglepass setImage:[UIImage imageNamed:@"passopen.png"] forState:UIControlStateNormal];
+        }
+    }
+    else if([sender tag] == 1)
+    {
+        if ([conf isSecureTextEntry]) {
+            conf.secureTextEntry = NO;
+            [toggleconf setImage:[UIImage imageNamed:@"passclosed.png"] forState:UIControlStateNormal];
+        }
+        else
+        {
+            conf.secureTextEntry = YES;
+            [toggleconf setImage:[UIImage imageNamed:@"passopen.png"] forState:UIControlStateNormal];
+        }
+    }
+    else if([sender tag] == 2)
+    {
+        if ([[email text] length] > 0 && ([self IsValidEmail:[email text]]) && [[pass text] length] > 0 && [[conf text] length] > 0) {
+            if ([[pass text] length] >= 8) {
+                if ([[pass text] isEqualToString:[conf text]]) {
+                    [self performSegueWithIdentifier:@"UBirthday" sender:self];
+                }
+                else {
+                    [self showAlert:L(@"errorInvalidConfirmPassword") title:@"Warning!" btn:@"OK" tag:0 delegate:self];
+                }
+            }
+            else {
+                [self showAlert:L(@"errorInvalidPassword") title:@"Warning!" btn:@"OK" tag:0 delegate:self];
+            }
+        }
+        else if([[email text] length] > 0 && ![self IsValidEmail:[email text]]){
+            [self removeValidationIcon:email withColor:nil];
+            [self required:email withMsg:L(@"errorInvalidEmailOrMobile")];
+        }else{
+            if([[email text] length] == 0){
+                [self required:email withMsg:nil];
+            }
+            
+            if([[pass text] length] == 0){
+                [self requiredPassword:pass withMsg:nil];
+            }
+            
+            if([[conf text] length] == 0){
+                [self requiredPassword:conf withMsg:nil];
+            }
+        }
+    }
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    if ([[segue identifier] isEqualToString:@"UBirthday"]) {
+        UBirthday *NVC = [segue destinationViewController];
+        NVC.data = data;
+        NVC.PInfo = [NSMutableDictionary dictionaryWithObjectsAndKeys:[email text], @"Email", [pass text], @"Password", nil];
+    }
+}
+
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+    [self.view addGestureRecognizer:tapRecognizer];
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+    [self.view removeGestureRecognizer:tapRecognizer];
+    
+    if ([textField tag] == 0) {
+        if(![self IsValidEmail:[email text]]){
+            [self required:email withMsg:L(@"errorInvalidEmailOrMobile")];
+        }
+    }
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Prevent crashing undo bug – see note below.
+    if(range.length + range.location > textField.text.length)
+    {
+        return NO;
+    }
+    
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    
+    if ([textField tag] == 0) {
+        if (newLength > 0) {
+            [self removeValidationIcon:email withColor:nil];
+            [emailLabel setHidden:NO];
+        } else {
+            [emailLabel setHidden:YES];
+        }
+    } else if ([textField tag] == 1) {
+        if (newLength > 0) {
+            [self removeValidationIconPassword:pass withColor:nil];
+            [passLabel setHidden:NO];
+        } else {
+            [passLabel setHidden:YES];
+        }
+        return newLength <= 20;
+    } else if ([textField tag] == 2) {
+        if (newLength > 0) {
+            [self removeValidationIconPassword:conf withColor:nil];
+            [confLabel setHidden:NO];
+        } else {
+            [confLabel setHidden:YES];
+        }
+        return newLength <= 20;
+    }
+    
+    return YES;
+}
+
+@end

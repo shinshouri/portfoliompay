@@ -1,0 +1,147 @@
+//
+//  SetPIN.m
+//  MPay
+//
+//  Created by Admin on 7/11/16.
+//  Copyright © 2016 Admin. All rights reserved.
+//
+
+#import "SetPIN.h"
+#import "LinkFingerprint.h"
+
+@implementation SetPIN
+{
+    UILabel *pinLabel, *cpinLabel;
+    UITextField *pin, *cpin;
+}
+@synthesize ActKey, ActFile, data, PInfo, Bday;
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [self UI];
+}
+
+-(void)viewWillAppear:(BOOL)animated {
+    [self.view addGestureRecognizer:tapRecognizer];
+}
+
+- (void)UI {
+    UIView *bgview = [self UIView:self withFrame:CGRectMake(0, 70, [self view].frame.size.width, [self view].frame.size.height-60)];
+    [[bgview layer] setCornerRadius:10];
+    
+    [bgview addSubview:[self UILabel:self withFrame:CGRectMake(20, 10, bgview.bounds.size.width-40, 50) withText:L(@"setPinDesc") withTextSize:16 withAlignment:0 withLines:3]];
+    
+    pinLabel = [self UILabel:self withFrame:CGRectMake(20, 85, bgview.bounds.size.width-40, 10) withText:L(@"pin") withTextSize:12 withAlignment:0 withLines:0];
+    [pinLabel setHidden:YES];
+    [bgview addSubview:pinLabel];
+    pin = [self CustomTextField:CGRectMake(20, pinLabel.frame.origin.y + 5, bgview.frame.size.width - 40, 40) withStrPlcHolder:L(@"pin") withAttrColor:nil keyboardType:UIKeyboardTypeNumberPad withTextColor:nil withFontSize:16 withTag:0 withDelegate:self];
+    [pin setSecureTextEntry:TRUE];
+    [bgview addSubview:pin];
+    
+    cpinLabel = [self UILabel:self withFrame:CGRectMake(20, 155, bgview.bounds.size.width-40, 10) withText:L(@"confirmPin") withTextSize:12 withAlignment:0 withLines:0];
+    [cpinLabel setHidden:YES];
+    [bgview addSubview:cpinLabel];
+    cpin = [self CustomTextField:CGRectMake(20, cpinLabel.frame.origin.y + 5, bgview.frame.size.width - 40, 40) withStrPlcHolder:L(@"confirmPin") withAttrColor:nil keyboardType:UIKeyboardTypeNumberPad withTextColor:nil withFontSize:16 withTag:1 withDelegate:self];
+    [cpin setSecureTextEntry:TRUE];
+    [bgview addSubview:cpin];
+    
+    UIButton *btn = [self UIButton:self withFrame:CGRectMake(20, 220, bgview.bounds.size.width-40, 50) withTitle:L(@"setMyPin") withTag:0];
+    [btn setBackgroundColor:[self colorFromHexString:@"#00A4BB" withAlpha:1.0]];
+    btn.layer.cornerRadius = 3;
+    [bgview addSubview:btn];
+    
+    [[self view] addSubview:bgview];
+}
+
+-(void)Act:(id)sender {
+    if([sender tag] == 0)
+    {
+        if ([pin text].length > 0 && [cpin text].length > 0) {
+            if([pin text].length == 6 && [cpin text].length == 6){
+                if ([[pin text] isEqualToString:[cpin text]]) {
+                    [self RequestAPIRegisterMPayUser];
+                }
+                else
+                {
+                    [self showAlert:@"PIN must be equal." title:@"Warning!" btn:@"OK" tag:0 delegate:self];
+                }
+            }else{
+                if([pin text].length <6)
+                    [self required:pin withMsg:@"PIN must be 6 digits."];
+                if([cpin text].length <6)
+                    [self required:cpin withMsg:@"Confirm PIN must be 6 digits."];
+            }
+        }
+        else
+        {
+            if([pin text].length <= 0)
+                [self required:pin withMsg:nil];
+            if([cpin text].length <= 0)
+                [self required:cpin withMsg:nil];
+        }
+    }
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    
+}
+
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
+    // Prevent crashing undo bug – see note below.
+    if(range.length + range.location > textField.text.length)
+    {
+        return NO;
+    }
+    
+    NSUInteger newLength = [textField.text length] + [string length] - range.length;
+    
+    if ([textField tag] == 0) {
+        if (newLength > 0) {
+            [pinLabel setHidden:NO];
+            [self removeValidationIcon:pin withColor:nil];
+        } else {
+            [pinLabel setHidden:YES];
+        }
+    } else if ([textField tag] == 1) {
+        if (newLength > 0) {
+            [cpinLabel setHidden:NO];
+            [self removeValidationIcon:cpin withColor:nil];
+        } else {
+            [cpinLabel setHidden:YES];
+        }
+    }
+    return newLength <= 6;
+}
+
+-(void)RequestAPIRegisterMPayUser {
+    [[self navigationController].view addSubview:[self showmask]];
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self RequestData:self withAction:@"RegisterMPayUser" withParams:[NSDictionary dictionaryWithObjectsAndKeys:[data objectForKey:@"FirstName"], @"firstName", [data objectForKey:@"LastName"], @"lastName", [data objectForKey:@"ListSQ"], @"listSecurityQuestion", [PInfo objectForKey:@"Email"], @"emailAddress", [PInfo objectForKey:@"Password"], @"password", Bday, @"dateOfBirthday", [pin text], @"pin", @"en", @"locale", DEVICETOKEN, @"deviceToken", nil]];
+        NSLog(@"%@", response);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (response == nil) {
+                [maskView removeFromSuperview];
+                [self showAlert:MSGResponseNil title:@"Warning!" btn:@"OK" tag:0 delegate:self];
+            }
+            else if([[response objectForKey:@"ok"] intValue] == 1)
+            {
+                [maskView removeFromSuperview];
+                GlobalVariable *GV = [GlobalVariable sharedInstance];
+                GV.Email = [PInfo objectForKey:@"Email"];
+                if ([PCFingerPrint checkTouchIdSupport]) {
+                    [self performSegueWithIdentifier:@"LinkFingerprint" sender:self];
+                } else {
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                }
+            }
+            else
+            {
+                [maskView removeFromSuperview];
+                [self showAlert:[response objectForKey:@"message"] title:@"Message" btn:@"OK" tag:0 delegate:self];
+            }
+        });
+    });
+}
+
+@end
