@@ -1,0 +1,29 @@
+{
+     "url" : {
+         "serverPrefixs" : "http://",
+         "serverIp" : "10.243.130.248:8080",
+         "serverSuffixs" : "/primemobile/server/mandiripay",
+         "canBeChanged" : true
+     },
+     "sign" : {
+         "publicKeyName" : "primemobileoffice.cer",
+         "privateKeyName" : "primemobileoffice.p12",
+         "privateKeyPass" : "primemobile"
+     },
+     "security" : {
+         "siteKey" : "27yek45ssap201kuba902015",
+         "phraseKeyAppender" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+         "allowUntrustedCert" : true,
+         "SSLPinning" : true,
+         "fingerprintSSL" : ["20 D2 37 BE 66 FD C8 D7 E0 6B 08 BE 1B 39 20 80 A5 75 15 10"]
+     },
+     "moduleDate" : "23 01 2015 17:00:00",
+     "pushNotification" : {
+         "enable" : false,
+         "senderId" : "67291396320"
+     },
+     "timeout" : {
+         "connect" : 310,
+         "read" : 40
+     }
+}
