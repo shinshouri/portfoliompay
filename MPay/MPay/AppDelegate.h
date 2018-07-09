@@ -14,9 +14,8 @@
 #import "Login.h"
 #import "PaymentDetail.h"
 #import "NewPassword.h"
-#import "Firebase.h"
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, CWStatusBarClickedDelegate, FIRMessagingDelegate, UNUserNotificationCenterDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, CWStatusBarClickedDelegate, UNUserNotificationCenterDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) CWStatusBarNotification *notification;

@@ -112,21 +112,21 @@
     }
 }
 
--(void)cardIOView:(CardIOView *)cardIOView didScanCard:(CardIOCreditCardInfo *)cardInfo {
-    CNumber = cardInfo.cardNumber;
-    if (cardInfo.expiryMonth > 9) {
-        CMonth = [NSString stringWithFormat:@"%li", (unsigned long)cardInfo.expiryMonth];
-    }
-    else {
-        CMonth = [NSString stringWithFormat:@"0%li", (unsigned long)cardInfo.expiryMonth];
-    }
-    CYear = [NSString stringWithFormat:@"%li", (unsigned long)cardInfo.expiryYear];
-    
-    [defaults setValue:CNumber forKey:@"QRCardNumber"];
-    [defaults setValue:CMonth forKey:@"QRCardExpiryMonth"];
-    [defaults setValue:CYear forKey:@"QRCardExpiryYear"];
-    
-    [lbl setHidden:YES];
-    [btn setTitle:@"next" forState:UIControlStateNormal];
-}
+//-(void)cardIOView:(CardIOView *)cardIOView didScanCard:(CardIOCreditCardInfo *)cardInfo {
+//    CNumber = cardInfo.cardNumber;
+//    if (cardInfo.expiryMonth > 9) {
+//        CMonth = [NSString stringWithFormat:@"%li", (unsigned long)cardInfo.expiryMonth];
+//    }
+//    else {
+//        CMonth = [NSString stringWithFormat:@"0%li", (unsigned long)cardInfo.expiryMonth];
+//    }
+//    CYear = [NSString stringWithFormat:@"%li", (unsigned long)cardInfo.expiryYear];
+//    
+//    [defaults setValue:CNumber forKey:@"QRCardNumber"];
+//    [defaults setValue:CMonth forKey:@"QRCardExpiryMonth"];
+//    [defaults setValue:CYear forKey:@"QRCardExpiryYear"];
+//    
+//    [lbl setHidden:YES];
+//    [btn setTitle:@"next" forState:UIControlStateNormal];
+//}
 @end

@@ -7,9 +7,8 @@
 //
 
 #import "ParentViewController.h"
-#import <CardIO/CardIO.h>
 
-@interface ScanCard : ParentViewController <CardIOViewDelegate>
+@interface ScanCard : ParentViewController
 
 
 @end

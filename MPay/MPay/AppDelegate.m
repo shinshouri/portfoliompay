@@ -43,10 +43,10 @@
         [defaults setObject:@"N" forKey:@"Fingerprint"];
     
         //Firebase Register Device Token
-        [FIRApp configure];
+//        [FIRApp configure];
         
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kFIRInstanceIDTokenRefreshNotification object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:) name:kFIRInstanceIDTokenRefreshNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] removeObserver:self name:kFIRInstanceIDTokenRefreshNotification object:nil];
+//        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(tokenRefreshNotification:) name:kFIRInstanceIDTokenRefreshNotification object:nil];
         
         if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_9_x_Max) {
             UIUserNotificationType allNotificationTypes =
@@ -70,7 +70,7 @@
             // For iOS 10 display notification (sent via APNS)
             [UNUserNotificationCenter currentNotificationCenter].delegate = self;
             // For iOS 10 data message (sent via FCM)
-            [FIRMessaging messaging].remoteMessageDelegate = self;
+//            [FIRMessaging messaging].remoteMessageDelegate = self;
 #endif
         }
         [[UIApplication sharedApplication] registerForRemoteNotifications];
@@ -129,25 +129,25 @@
 //    return FALSE;
 //}
 
-- (void)tokenRefreshNotification:(NSNotification *)notification {
-    // Note that this callback will be fired everytime a new token is generated, including the first
-    // time. So if you need to retrieve the token as soon as it is available this is where that
-    // should be done.
-    NSString *refreshedToken = [[FIRInstanceID instanceID] token];
-    
-    NSString *didRegisterForRemoteNotificationsWithDeviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"didRegisterForRemoteNotificationsWithDeviceToken"];
-    
-    if(didRegisterForRemoteNotificationsWithDeviceToken && refreshedToken) {
-        // allow to continue
-        [defaults setObject:refreshedToken forKey:@"ApnsDeviceToken"];
-        [defaults synchronize];
-        [[NSUserDefaults standardUserDefaults] setObject:@"ok" forKey:@"getTokenRefreshNotification"];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:kFIRInstanceIDTokenRefreshNotification object:nil];
-    }
-    // Connect to FCM since connection may have failed when attempted before having a token.
-    
-    // TODO: If necessary send token to application server.
-}
+//- (void)tokenRefreshNotification:(NSNotification *)notification {
+//    // Note that this callback will be fired everytime a new token is generated, including the first
+//    // time. So if you need to retrieve the token as soon as it is available this is where that
+//    // should be done.
+//    NSString *refreshedToken = [[FIRInstanceID instanceID] token];
+//
+//    NSString *didRegisterForRemoteNotificationsWithDeviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:@"didRegisterForRemoteNotificationsWithDeviceToken"];
+//
+//    if(didRegisterForRemoteNotificationsWithDeviceToken && refreshedToken) {
+//        // allow to continue
+//        [defaults setObject:refreshedToken forKey:@"ApnsDeviceToken"];
+//        [defaults synchronize];
+//        [[NSUserDefaults standardUserDefaults] setObject:@"ok" forKey:@"getTokenRefreshNotification"];
+//        [[NSNotificationCenter defaultCenter] removeObserver:self name:kFIRInstanceIDTokenRefreshNotification object:nil];
+//    }
+//    // Connect to FCM since connection may have failed when attempted before having a token.
+//
+//    // TODO: If necessary send token to application server.
+//}
 
 -(void)ViewNotif:(NSDictionary*)userInfo {
 //    self.notification = [CWStatusBarNotification new];
@@ -275,9 +275,9 @@
     }
 }
 
--(void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
-//    NSLog(@"RemoteMessage %@", remoteMessage);
-}
+//-(void)applicationReceivedRemoteMessage:(FIRMessagingRemoteMessage *)remoteMessage {
+////    NSLog(@"RemoteMessage %@", remoteMessage);
+//}
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo
 {
@@ -301,11 +301,11 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
-    [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeProd];
-    
-    [[NSUserDefaults standardUserDefaults] setObject:@"ok" forKey:@"didRegisterForRemoteNotificationsWithDeviceToken"];
-
-    NSLog(@"DID REGISTER = %@", deviceToken);
+//    [[FIRInstanceID instanceID] setAPNSToken:deviceToken type:FIRInstanceIDAPNSTokenTypeProd];
+//    
+//    [[NSUserDefaults standardUserDefaults] setObject:@"ok" forKey:@"didRegisterForRemoteNotificationsWithDeviceToken"];
+//
+//    NSLog(@"DID REGISTER = %@", deviceToken);
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
